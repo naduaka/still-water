@@ -170,7 +170,7 @@
 
   /* MILESTONE BANNER */
   .milestone-banner {
-    margin: 0 14px; padding: 9px 13px;
+    margin: 10px 14px 0; padding: 9px 13px;
     background: var(--yellow); border-radius: 8px;
     font-size: 12px; font-weight: 600; color: #1a1000;
     text-align: center; display: none;
@@ -545,12 +545,15 @@ const ALL_SCENARIOS = [
 ];
 
 const MILESTONES = [
-  { at: 1, msg: "One step closer. Keep walking." },
-  { at: 2, msg: "Halfway there. The sun is high." },
-  { at: 3, msg: "You can see the well from here." },
-  { at: 5, msg: "You made it. The water is real." },
-  { at: 7, msg: "You carried it all the way home." }
+  { score: 10, msg: "One step closer. Keep walking." },
+  { score: 20, msg: "The sun is high. Stay moving." },
+  { score: 30, msg: "Halfway there." },
+  { score: 40, msg: "You can see the well from here." },
+  { score: 50, msg: "Almost there." },
+  { score: 60, msg: "You made it to the well." },
+  { score: 70, msg: "You carried it all the way home." }
 ];
+let triggeredMilestones = [];
 
 // ========================
 // STATE
@@ -560,6 +563,7 @@ let scenarios = [];
 let current = 0;
 let picked = false;
 let waterLevel = 100;
+let score = 0;
 
 const DIFF_CONFIG = {
   easy:   { count: 3, waterMeter: false },
@@ -590,6 +594,8 @@ function startGame() {
   scenarios = ALL_SCENARIOS.slice(0, cfg.count);
   current = 0;
   waterLevel = 100;
+  score = 0;
+  triggeredMilestones = [];
   picked = false;
 
   // water meter
@@ -669,9 +675,13 @@ function pickChoice(si, ci) {
     }
   }
 
-  // milestone check
-  const milestone = MILESTONES.find(m => m.at === si + 1);
+  // increment score (10 per decision)
+  score += 10;
+
+  // milestone check by score
+  const milestone = MILESTONES.find(m => m.score === score && !triggeredMilestones.includes(m.score));
   if (milestone) {
+    triggeredMilestones.push(milestone.score);
     setTimeout(() => {
       const banner = document.getElementById('milestoneBanner');
       banner.textContent = milestone.msg;
